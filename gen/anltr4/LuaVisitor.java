@@ -1,4 +1,4 @@
-// Generated from C:/Users/User/dev/compiler/lua-compiler/src/main/java/anltr4\Lua.g4 by ANTLR 4.9.1
+// Generated from /home/anton/IdeaProjects/lua-compiler/src/main/java/anltr4/Lua.g4 by ANTLR 4.9.1
 package anltr4;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -29,17 +29,77 @@ public interface LuaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitStat(LuaParser.StatContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link LuaParser#attnamelist}.
+	 * Visit a parse tree produced by {@link LuaParser#varDecl}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitAttnamelist(LuaParser.AttnamelistContext ctx);
+	T visitVarDecl(LuaParser.VarDeclContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link LuaParser#attrib}.
+	 * Visit a parse tree produced by {@link LuaParser#functioncall}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitAttrib(LuaParser.AttribContext ctx);
+	T visitFunctioncall(LuaParser.FunctioncallContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LuaParser#gotoStat}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitGotoStat(LuaParser.GotoStatContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LuaParser#doStat}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDoStat(LuaParser.DoStatContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LuaParser#whileStat}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitWhileStat(LuaParser.WhileStatContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LuaParser#repeatStat}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRepeatStat(LuaParser.RepeatStatContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LuaParser#ifStat}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitIfStat(LuaParser.IfStatContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LuaParser#forStat}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitForStat(LuaParser.ForStatContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LuaParser#forInStat}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitForInStat(LuaParser.ForInStatContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LuaParser#funcStat}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFuncStat(LuaParser.FuncStatContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LuaParser#localFuncStat}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLocalFuncStat(LuaParser.LocalFuncStatContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LuaParser#localVarDecl}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLocalVarDecl(LuaParser.LocalVarDeclContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link LuaParser#retstat}.
 	 * @param ctx the parse tree
@@ -71,6 +131,18 @@ public interface LuaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitNamelist(LuaParser.NamelistContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link LuaParser#attnamelist}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAttnamelist(LuaParser.AttnamelistContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link LuaParser#attrib}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAttrib(LuaParser.AttribContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link LuaParser#explist}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -89,23 +161,17 @@ public interface LuaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPrefixexp(LuaParser.PrefixexpContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link LuaParser#functioncall}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFunctioncall(LuaParser.FunctioncallContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link LuaParser#varOrExp}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitVarOrExp(LuaParser.VarOrExpContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link LuaParser#var_}.
+	 * Visit a parse tree produced by {@link LuaParser#var}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitVar_(LuaParser.Var_Context ctx);
+	T visitVar(LuaParser.VarContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link LuaParser#varSuffix}.
 	 * @param ctx the parse tree
@@ -167,59 +233,17 @@ public interface LuaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFieldsep(LuaParser.FieldsepContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link LuaParser#operatorOr}.
+	 * Visit a parse tree produced by {@link LuaParser#linkOperator}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitOperatorOr(LuaParser.OperatorOrContext ctx);
+	T visitLinkOperator(LuaParser.LinkOperatorContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link LuaParser#operatorAnd}.
+	 * Visit a parse tree produced by {@link LuaParser#unaryOperator}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitOperatorAnd(LuaParser.OperatorAndContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link LuaParser#operatorComparison}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitOperatorComparison(LuaParser.OperatorComparisonContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link LuaParser#operatorStrcat}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitOperatorStrcat(LuaParser.OperatorStrcatContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link LuaParser#operatorAddSub}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitOperatorAddSub(LuaParser.OperatorAddSubContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link LuaParser#operatorMulDivMod}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitOperatorMulDivMod(LuaParser.OperatorMulDivModContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link LuaParser#operatorBitwise}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitOperatorBitwise(LuaParser.OperatorBitwiseContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link LuaParser#operatorUnary}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitOperatorUnary(LuaParser.OperatorUnaryContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link LuaParser#operatorPower}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitOperatorPower(LuaParser.OperatorPowerContext ctx);
+	T visitUnaryOperator(LuaParser.UnaryOperatorContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link LuaParser#number}.
 	 * @param ctx the parse tree

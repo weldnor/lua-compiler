@@ -16,7 +16,7 @@ public class App {
         String script = "" +
                 "b = 10;" +
                 "c = (10 + 3) * (2 + 4)" +
-                "while true do k = 1 end";
+                "for i = 1, 10, 2 do k = i end";
         LuaLexer lexer = new LuaLexer(CharStreams.fromString(script));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         LuaParser parser = new LuaParser(tokens);

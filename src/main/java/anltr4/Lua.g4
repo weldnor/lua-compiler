@@ -1,284 +1,267 @@
+/*
+ BSD License
+
+ Copyright (c) 2013, Kazunori Sakamoto Copyright (c) 2016, Alexander Alexeev All rights reserved.
+
+
+ Redistribution and use in source and binary forms, with or without modification, are permitted
+ provided that the following conditions are met:
+
+ 1. Redistributions of source code must retain the above copyright notice, this list of conditions
+ and the following disclaimer. 2. Redistributions in binary form must reproduce the above copyright
+ notice, this list of conditions and the following disclaimer in the documentation and/or other
+ materials provided with the distribution. 3. Neither the NAME of Rainer Schuster nor the NAMEs of
+ its contributors may be used to endorse or promote products derived from this software without
+ specific prior written permission.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
+ IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
+ IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+ This grammar file derived from:
+
+ Lua 5.3 Reference Manual http://www.lua.org/manual/5.3/manual.html
+
+ Lua 5.2 Reference Manual http://www.lua.org/manual/5.2/manual.html
+
+ Lua 5.1 grammar written by Nicolai Mainiero http://www.antlr3.org/grammar/1178608849736/Lua.g
+
+
+ Tested by Kazunori Sakamoto with Test suite for Lua 5.2 (http://www.lua.org/tests/5.2/)
+
+ Tested by Alexander Alexeev with Test suite for Lua 5.3
+ http://www.lua.org/tests/lua-5.3.2-tests.tar.gz
+ */
+
 grammar Lua;
 
-chunk
-    : block EOF
-    ;
+chunk: SHEBANG? block EOF;
 
-block
-    : stat* retstat?
-    ;
+block: stat* retstat?;
 
-stat
-    : ';'
-    | varlist '=' explist
-    | functioncall
-    | label
-    | 'break'
-    | 'goto' NAME
-    | 'do' block 'end'
-    | 'while' exp 'do' block 'end'
-    | 'repeat' block 'until' exp
-    | 'if' exp 'then' block ('elseif' exp 'then' block)* ('else' block)? 'end'
-    | 'for' NAME '=' exp ',' exp (',' exp)? 'do' block 'end'
-    | 'for' namelist 'in' explist 'do' block 'end'
-    | 'function' funcname funcbody
-    | 'local' 'function' NAME funcbody
-    | 'local' attnamelist ('=' explist)?
-    ;
+stat:
+	SEMI
+	| varDecl
+	| functioncall
+	| label
+	| BREAK
+	| gotoStat
+	| doStat
+	| whileStat
+	| repeatStat
+	| ifStat
+	| forStat
+	| forInStat
+	| funcStat
+	| localFuncStat
+	| localVarDecl;
 
-attnamelist
-    : NAME attrib (',' NAME attrib)*
-    ;
+varDecl: varlist EQL explist SEMI?;
 
-attrib
-    : ('<' NAME '>')?
-    ;
+functioncall: varOrExp nameAndArgs+ SEMI?;
 
-retstat
-    : 'return' explist? ';'?
-    ;
+gotoStat: GOTO NAME;
 
-label
-    : '::' NAME '::'
-    ;
+doStat: DO block END;
 
-funcname
-    : NAME ('.' NAME)* (':' NAME)?
-    ;
+whileStat: WHILE exp DO block END;
 
-varlist
-    : var_ (',' var_)*
-    ;
+repeatStat: REPEAT block UNTIL exp SEMI?;
 
-namelist
-    : NAME (',' NAME)*
-    ;
+ifStat:
+	IF exp THEN block (ELSEIF exp THEN block)* (ELSE block)? END;
 
-explist
-    : exp (',' exp)*
-    ;
+forStat: FOR NAME EQL exp COMMA exp (COMMA exp)? DO block END;
 
-exp
-    : 'nil' | 'false' | 'true'
-    | number
-    | string
-    | '...'
-    | functiondef
-    | prefixexp
-    | tableconstructor
-    | <assoc=right> exp operatorPower exp
-    | operatorUnary exp
-    | exp operatorMulDivMod exp
-    | exp operatorAddSub exp
-    | <assoc=right> exp operatorStrcat exp
-    | exp operatorComparison exp
-    | exp operatorAnd exp
-    | exp operatorOr exp
-    | exp operatorBitwise exp
-    ;
+forInStat: FOR namelist IN explist DO block END;
 
-prefixexp
-    : varOrExp nameAndArgs*
-    ;
+funcStat: FUNCTION funcname funcbody;
 
-functioncall
-    : varOrExp nameAndArgs+
-    ;
+localFuncStat: LOCAL FUNCTION NAME funcbody;
 
-varOrExp
-    : var_ | '(' exp ')'
-    ;
+localVarDecl: LOCAL attnamelist (EQL explist)? SEMI?;
 
-var_
-    : (NAME | '(' exp ')' varSuffix) varSuffix*
-    ;
+retstat: RETURN explist? SEMI?;
 
-varSuffix
-    : nameAndArgs* ('[' exp ']' | '.' NAME)
-    ;
+label: DCOLON NAME DCOLON;
 
-nameAndArgs
-    : (':' NAME)? args
-    ;
+funcname: NAME (DOT NAME)* (COLON NAME)?;
 
-/*
-var_
-    : NAME | prefixexp '[' exp ']' | prefixexp '.' NAME
-    ;
-prefixexp
-    : var_ | functioncall | '(' exp ')'
-    ;
-functioncall
-    : prefixexp args | prefixexp ':' NAME args
-    ;
-*/
+varlist: var (COMMA var)*;
 
-args
-    : '(' explist? ')' | tableconstructor | string
-    ;
+namelist: NAME (COMMA NAME)*;
 
-functiondef
-    : 'function' funcbody
-    ;
+attnamelist: NAME attrib (COMMA NAME attrib)*;
 
-funcbody
-    : '(' parlist? ')' block 'end'
-    ;
+attrib: (LT NAME GT)?;
 
-parlist
-    : namelist (',' '...')? | '...'
-    ;
+explist: exp (COMMA exp)*;
 
-tableconstructor
-    : '{' fieldlist? '}'
-    ;
+exp:
+	NIL
+	| FALSE
+	| TRUE
+	| number
+	| string
+	| ELLIPSIS
+	| prefixexp
+	| functiondef
+	| tableconstructor
+	| unaryOperator exp
+	| exp linkOperator exp;
 
-fieldlist
-    : field (fieldsep field)* fieldsep?
-    ;
+prefixexp: varOrExp nameAndArgs*;
 
-field
-    : '[' exp ']' '=' exp | NAME '=' exp | exp
-    ;
+varOrExp: var | LP exp RP;
 
-fieldsep
-    : ',' | ';'
-    ;
+var: (NAME | LP exp RP varSuffix) varSuffix*;
 
-operatorOr
-	: 'or';
+varSuffix: nameAndArgs* (LSB exp RSB | DOT NAME);
 
-operatorAnd
-	: 'and';
+nameAndArgs: (COLON NAME)? args;
 
-operatorComparison
-	: '<' | '>' | '<=' | '>=' | '~=' | '==';
+args: LP explist? RP | tableconstructor | string;
 
-operatorStrcat
-	: '..';
+functiondef: FUNCTION funcbody;
 
-operatorAddSub
-	: '+' | '-';
+funcbody: LP parlist? RP block END;
 
-operatorMulDivMod
-	: '*' | '/' | '%' | '//';
+parlist: namelist (COMMA ELLIPSIS)? | ELLIPSIS;
 
-operatorBitwise
-	: '&' | '|' | '~' | '<<' | '>>';
+tableconstructor: LB fieldlist? RB;
 
-operatorUnary
-    : 'not' | '#' | '-' | '~';
+fieldlist: field (fieldsep field)* fieldsep?;
 
-operatorPower
-    : '^';
+field: LSB exp RSB EQL exp | NAME EQL exp | exp;
 
-number
-    : INT | HEX | FLOAT | HEX_FLOAT
-    ;
+fieldsep: COMMA | SEMI;
 
-string
-    : NORMALSTRING | CHARSTRING | LONGSTRING
-    ;
+linkOperator:
+	'and'
+	| 'or'
+	| '..'
+	| '<'
+	| '>'
+	| '<='
+	| '>='
+	| '~='
+	| '=='
+	| '+'
+	| '-'
+	| '*'
+	| '/'
+	| '%'
+	| '//'
+	| '&'
+	| '|'
+	| '~'
+	| '<<'
+	| '>>'
+	| '^';
+
+unaryOperator: 'not' | '#' | '-' | '~';
+
+number: INT | HEX | FLOAT | HEX_FLOAT;
+
+string: NORMALSTRING | CHARSTRING | LONGSTRING;
 
 // LEXER
 
-NAME
-    : [a-zA-Z_][a-zA-Z_0-9]*
-    ;
+//keyword
+FUNCTION: 'function';
+RETURN: 'return';
+LOCAL: 'local';
+TRUE: 'true';
+FALSE: 'false';
+NIL: 'nil';
+BREAK: 'break';
+DO: 'do';
+END: 'end';
+GOTO: 'goto';
+WHILE: 'while';
+REPEAT: 'repeat';
+UNTIL: 'until';
+FOR: 'for';
+IF: 'if';
+THEN: 'then';
+ELSE: 'else';
+ELSEIF: 'elseif';
+IN: 'in';
 
-NORMALSTRING
-    : '"' ( EscapeSequence | ~('\\'|'"') )* '"'
-    ;
+SEMI: ';';
+COMMA: ',';
+DOT: '.';
+EQL: '=';
+COLON: ':';
+DCOLON: '::';
+ELLIPSIS: '...';
+LT: '<';
+GT: '>';
+LP: '(';
+RP: ')';
+LB: '{';
+RB: '}';
+LSB: '[';
+RSB: ']';
 
-CHARSTRING
-    : '\'' ( EscapeSequence | ~('\''|'\\') )* '\''
-    ;
+NAME: [a-zA-Z_][a-zA-Z_0-9]*;
 
-LONGSTRING
-    : '[' NESTED_STR ']'
-    ;
+NORMALSTRING: '"' ( EscapeSequence | ~('\\' | '"'))* '"';
 
-fragment
-NESTED_STR
-    : '=' NESTED_STR '='
-    | '[' .*? ']'
-    ;
+CHARSTRING: '\'' ( EscapeSequence | ~('\'' | '\\'))* '\'';
 
-INT
-    : Digit+
-    ;
+LONGSTRING: '[' NESTED_STR ']';
 
-HEX
-    : '0' [xX] HexDigit+
-    ;
+fragment NESTED_STR: '=' NESTED_STR '=' | '[' .*? ']';
 
-FLOAT
-    : Digit+ '.' Digit* ExponentPart?
-    | '.' Digit+ ExponentPart?
-    | Digit+ ExponentPart
-    ;
+INT: Digit+;
 
-HEX_FLOAT
-    : '0' [xX] HexDigit+ '.' HexDigit* HexExponentPart?
-    | '0' [xX] '.' HexDigit+ HexExponentPart?
-    | '0' [xX] HexDigit+ HexExponentPart
-    ;
+HEX: '0' [xX] HexDigit+;
 
-fragment
-ExponentPart
-    : [eE] [+-]? Digit+
-    ;
+FLOAT:
+	Digit+ '.' Digit* ExponentPart?
+	| '.' Digit+ ExponentPart?
+	| Digit+ ExponentPart;
 
-fragment
-HexExponentPart
-    : [pP] [+-]? Digit+
-    ;
+HEX_FLOAT:
+	'0' [xX] HexDigit+ '.' HexDigit* HexExponentPart?
+	| '0' [xX] '.' HexDigit+ HexExponentPart?
+	| '0' [xX] HexDigit+ HexExponentPart;
 
-fragment
-EscapeSequence
-    : '\\' [abfnrtvz"'\\]
-    | '\\' '\r'? '\n'
-    | DecimalEscape
-    | HexEscape
-    | UtfEscape
-    ;
-fragment
-DecimalEscape
-    : '\\' Digit
-    | '\\' Digit Digit
-    | '\\' [0-2] Digit Digit
-    ;
-fragment
-HexEscape
-    : '\\' 'x' HexDigit HexDigit
-    ;
-fragment
-UtfEscape
-    : '\\' 'u{' HexDigit+ '}'
-    ;
-fragment
-Digit
-    : [0-9]
-    ;
-fragment
-HexDigit
-    : [0-9a-fA-F]
-    ;
-COMMENT
-    : '--[' NESTED_STR ']' -> channel(HIDDEN)
-    ;
-LINE_COMMENT
-    : '--'
-    (                                               // --
-    | '[' '='*                                      // --[==
-    | '[' '='* ~('='|'['|'\r'|'\n') ~('\r'|'\n')*   // --[==AA
-    | ~('['|'\r'|'\n') ~('\r'|'\n')*                // --AAA
-    ) ('\r\n'|'\r'|'\n'|EOF)
-    -> channel(HIDDEN)
-    ;
-WS
-    : [ \t\u000C\r\n]+ -> skip
-    ;
-SHEBANG
-    : '#' '!' ~('\n'|'\r')* -> channel(HIDDEN)
-    ;
+fragment ExponentPart: [eE] [+-]? Digit+;
+
+fragment HexExponentPart: [pP] [+-]? Digit+;
+
+fragment EscapeSequence:
+	'\\' [abfnrtvz"'\\]
+	| '\\' '\r'? '\n'
+	| DecimalEscape
+	| HexEscape
+	| UtfEscape;
+
+fragment DecimalEscape:
+	'\\' Digit
+	| '\\' Digit Digit
+	| '\\' [0-2] Digit Digit;
+
+fragment HexEscape: '\\' 'x' HexDigit HexDigit;
+fragment UtfEscape: '\\' 'u{' HexDigit+ '}';
+fragment Digit: [0-9];
+fragment HexDigit: [0-9a-fA-F];
+COMMENT: '--[' NESTED_STR ']' -> channel(1);
+
+LINE_COMMENT:
+	'--' (
+		// --
+		| '[' '='* // --[==
+		| '[' '='* ~('=' | '[' | '\r' | '\n') ~('\r' | '\n')* // --[==AA
+		| ~('[' | '\r' | '\n') ~('\r' | '\n')* // --AAA
+	) ('\r\n' | '\r' | '\n' | EOF) -> channel(1);
+
+WS: [ \t\u000C\r\n]+ -> channel(1);
+SHEBANG: '#' '!' ~('\n' | '\r')*;
